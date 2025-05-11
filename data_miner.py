@@ -1,10 +1,14 @@
 import json
 from collections import Counter
-from open_ai_call import get_response
 from write_to_csv import *
-# from google_gemini_call import get_response
 from typing import List, Dict, Any
 import pandas as pd
+
+# from open_ai_call import get_response
+# from google_gemini_call import get_response
+from claude_assessment import get_assessment
+
+
 
 
 VERSIONS = ['v1','v2','v3', 'v4', 'v5']
@@ -122,7 +126,7 @@ def get_llm_eval(data: Dict[str, Any], start: int, stop: int, step: int = 100, l
                 i += 1
                 print(i)
                 new_data[k] = {'content': data[k]['content']}
-                response = get_response(data[k]['content'])
+                response = get_assessment(data[k]['content'])
 
                 try:
                     parsed_response = json.loads(response)
@@ -238,7 +242,7 @@ def combine_predictions() -> None:
 # jsonl_to_json('r_SuicideWatch_posts_12.jsonl', 'llm-input.json')
 
 # Load posts, label posts from start to end index. save them in the versioned folder.
-# label_posts(start=0, end=3000, llm='ds_labels')
+label_posts(start=0, end=3000, llm='ds_labels')
 # combine_ratings(start=0, stop=3000, llm='gemini_labels')
 # consistent_labels_to_csv(start=0, stop=3000, filename='labeled_reddit_posts_all.csv')
 # combine_predictions()

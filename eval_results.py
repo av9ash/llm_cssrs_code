@@ -38,7 +38,7 @@ def compute_class_metrics(y_true, y_pred):
     print(metrics_results)
 
 
-def generate_confusion_matrix(y_true, y_pred):
+def generate_confusion_matrix(y_true, y_pred, model):
     # Compute the confusion matrix
     conf_matrix = confusion_matrix(y_true, y_pred)
 
@@ -48,17 +48,21 @@ def generate_confusion_matrix(y_true, y_pred):
     plt.xlabel("Predicted Severity")
     plt.ylabel("True Severity")
     plt.title("Confusion Matrix for Severity Predictions")
-    plt.show()
+    plt.savefig(f'graphs/{model}_cm.png')
 
 
-df = pd.read_csv("labeled_posts_all.csv")
-# Drop any rows where severity or predicted severity is NaN
-df_clean = df.dropna(subset=["severity", "gpt_label"])
+# df = pd.read_csv("labeled_posts_all.csv")
+models = ['claude','gpt','llama','mistral', 'gemini']
 
-# Extract ground truth and predictions
-y_true = df_clean["severity"].astype(int)
-y_pred = df_clean["gpt_label"].astype(int)
+for model in models:
+    print(model)
+    df = pd.read_csv(f"labelled_data/csv/labeled_posts_{model}.csv")
+    # Drop any rows where severity or predicted severity is NaN
+    df_clean = df.dropna(subset=["severity", f"{model}_label"])
 
+    # Extract ground truth and predictions
+    y_true = df_clean["severity"].astype(int)
+    y_pred = df_clean[f"{model}_label"].astype(int)
 
-compute_class_metrics(y_true, y_pred)
-generate_confusion_matrix(y_true, y_pred)
+    compute_class_metrics(y_true, y_pred)
+    generate_confusion_matrix(y_true, y_pred, model)
